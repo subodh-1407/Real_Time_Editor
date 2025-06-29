@@ -721,7 +721,7 @@ const roomSchema = new mongoose.Schema({
   text: {
     type: String,
     default:
-      "Welcome to TextSync!\nStart typing to see real-time collaboration in action.\n\nThis is a collaborative text editor where multiple users can edit the same document simultaneously.\n\nYou can:\n- Write notes\n- Draft documents\n- Collaborate on text\n- Share ideas\n\nEnjoy writing together!",
+      "",
   },
   users: [
     {
@@ -759,7 +759,7 @@ async function getOrCreateRoom(roomId) {
       if (!inMemoryRooms.has(roomId)) {
         inMemoryRooms.set(roomId, {
           roomId,
-          text: "Welcome to TextSync!\nStart typing to see real-time collaboration in action.\n\nThis is a collaborative text editor where multiple users can edit the same document simultaneously.\n\nYou can:\n- Write notes\n- Draft documents\n- Collaborate on text\n- Share ideas\n\nEnjoy writing together!",
+          text: "",
           users: [],
           createdAt: new Date(),
           lastModified: new Date(),
@@ -773,7 +773,7 @@ async function getOrCreateRoom(roomId) {
     if (!inMemoryRooms.has(roomId)) {
       inMemoryRooms.set(roomId, {
         roomId,
-        text: "Welcome to TextSync!\nStart typing to see real-time collaboration in action.\n\nThis is a collaborative text editor where multiple users can edit the same document simultaneously.\n\nYou can:\n- Write notes\n- Draft documents\n- Collaborate on text\n- Share ideas\n\nEnjoy writing together!",
+        text: "",
         users: [],
         createdAt: new Date(),
         lastModified: new Date(),
@@ -934,7 +934,7 @@ app.post("/api/rooms", async (req, res) => {
       }
       const room = {
         roomId,
-        text: "Welcome to TextSync!\nStart typing to see real-time collaboration in action.\n\nThis is a collaborative text editor where multiple users can edit the same document simultaneously.\n\nYou can:\n- Write notes\n- Draft documents\n- Collaborate on text\n- Share ideas\n\nEnjoy writing together!",
+        text: "",
         users: [],
         createdAt: new Date(),
         lastModified: new Date(),
