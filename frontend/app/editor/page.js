@@ -659,8 +659,7 @@
 //       <EditorContent />
 //     </Suspense>
 //   )
-// }
-"use client"
+// }"use client"
 
 import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -674,9 +673,7 @@ import io from "socket.io-client"
 function EditorContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [text, setText] = useState(
-    "Welcome to TextSync!\nStart typing to see real-time collaboration in action.\n\nThis is a collaborative text editor where multiple users can edit the same document simultaneously.\n\nYou can:\n- Write notes\n- Draft documents\n- Collaborate on text\n- Share ideas\n\nEnjoy writing together!",
-  )
+  const [text, setText] = useState("") // 👈 Now starts empty
   const [users, setUsers] = useState([])
   const [isConnected, setIsConnected] = useState(false)
   const [connectionError, setConnectionError] = useState("")
@@ -687,7 +684,6 @@ function EditorContent() {
   const roomId = searchParams.get("room") || ""
   const userName = searchParams.get("user") || ""
 
-  // Get backend URL from environment or use localhost for development
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001"
 
   useEffect(() => {
@@ -698,7 +694,6 @@ function EditorContent() {
 
     console.log("Attempting to connect to backend:", BACKEND_URL)
 
-    // Initialize Socket.io connection with better error handling
     socketRef.current = io(BACKEND_URL, {
       transports: ["websocket", "polling"],
       timeout: 5000,
@@ -709,8 +704,6 @@ function EditorContent() {
       setIsConnected(true)
       setConnectionError("")
       console.log("✅ Connected to server")
-
-      // Join room
       socketRef.current.emit("join-room", { roomId, userName })
     })
 
@@ -718,7 +711,6 @@ function EditorContent() {
       setIsConnected(false)
       setConnectionError("Failed to connect to backend server")
       console.error("❌ Connection error:", error)
-      console.log("💡 Make sure the backend server is running")
     })
 
     socketRef.current.on("room-joined", (data) => {
@@ -733,17 +725,14 @@ function EditorContent() {
 
     socketRef.current.on("user-joined", (data) => {
       setUsers((prev) => [...prev, data.user])
-      console.log(`👤 ${data.user.name} joined the room`)
     })
 
     socketRef.current.on("user-left", (data) => {
       setUsers((prev) => prev.filter((u) => u.id !== data.userId))
-      console.log(`👋 ${data.userName} left the room`)
     })
 
     socketRef.current.on("disconnect", () => {
       setIsConnected(false)
-      console.log("❌ Disconnected from server")
     })
 
     socketRef.current.on("error", (error) => {
@@ -924,9 +913,7 @@ function EditorContent() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">Text Editor</CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Badge variant="outline" className="text-xs">
-                      Plain Text
-                    </Badge>
+                    <Badge variant="outline" className="text-xs">Plain Text</Badge>
                     <Badge
                       variant="outline"
                       className={`text-xs ${isConnected ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
@@ -943,7 +930,7 @@ function EditorContent() {
                     value={text}
                     onChange={(e) => handleTextChange(e.target.value)}
                     className="w-full h-full p-6 text-base border-0 resize-none focus:outline-none focus:ring-0 bg-white text-gray-800 leading-relaxed"
-                    placeholder="Start typing your text here..."
+                    placeholder="Start collaborating..."
                     style={{
                       minHeight: "calc(100vh - 280px)",
                       fontFamily: "system-ui, -apple-system, sans-serif",
@@ -969,10 +956,4 @@ export default function EditorPage() {
             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-600">Loading editor...</p>
           </div>
-        </div>
-      }
-    >
-      <EditorContent />
-    </Suspense>
-  )
-}
+        <
