@@ -675,7 +675,7 @@ function EditorContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [text, setText] = useState(
-    "Welcome to TextSync!\nStart typing to see real-time collaboration in action.\n\nThis is a collaborative text editor where multiple users can edit the same document simultaneously.\n\nYou can:\n- Write notes\n- Draft documents\n- Collaborate on text\n- Share ideas\n\nEnjoy writing together!",
+    "",
   )
   const [users, setUsers] = useState([])
   const [isConnected, setIsConnected] = useState(false)
