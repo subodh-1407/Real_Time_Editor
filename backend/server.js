@@ -715,14 +715,25 @@ mongoose
     console.log("💡 Using in-memory storage as fallback")
   })
 
+const roomLanguages = ["javascript", "typescript", "python", "json", "text"]
+const defaultLanguage = roomLanguages[0]
+
+function getRoomLanguage(room) {
+  return {
+    language: room?.language ?? defaultLanguage,
+    languageRevision: room?.languageRevision ?? 0,
+  }
+}
+
 // Room Schema
 const roomSchema = new mongoose.Schema({
   roomId: { type: String, required: true, unique: true },
   text: {
     type: String,
-    default:
-      "",
+    default: "",
   },
+  language: { type: String, enum: roomLanguages, default: defaultLanguage },
+  languageRevision: { type: Number, default: 0 },
   users: [
     {
       id: String,
@@ -748,18 +759,18 @@ async function getOrCreateRoom(roomId) {
   try {
     if (mongoose.connection.readyState === 1) {
       // MongoDB is connected
-      let room = await Room.findOne({ roomId })
-      if (!room) {
-        room = new Room({ roomId })
-        await room.save()
-      }
-      return room
+      return await Room.findOneAndUpdate(
+        { roomId },
+        { $setOnInsert: { roomId } },
+        { upsert: true, new: true, setDefaultsOnInsert: true },
+      )
     } else {
       // Use in-memory storage
       if (!inMemoryRooms.has(roomId)) {
         inMemoryRooms.set(roomId, {
           roomId,
           text: "",
+          ...getRoomLanguage(),
           users: [],
           createdAt: new Date(),
           lastModified: new Date(),
@@ -774,6 +785,7 @@ async function getOrCreateRoom(roomId) {
       inMemoryRooms.set(roomId, {
         roomId,
         text: "",
+        ...getRoomLanguage(),
         users: [],
         createdAt: new Date(),
         lastModified: new Date(),
@@ -812,20 +824,25 @@ io.on("connection", (socket) => {
       room.users.push(user)
 
       // Save room if using MongoDB
-      if (mongoose.connection.readyState === 1) {
-        await room.save()
+      if (room._id) {
+        await Room.updateOne({ _id: room._id }, { $set: { users: room.users } })
       }
 
       // Join socket room
-      socket.join(roomId)
+      await socket.join(roomId)
 
       // Store connection info
       activeConnections.set(socket.id, { roomId, userName, user })
 
-      // Send current text to user
+      // Refresh the document and its language after subscribing to room updates.
+      const currentRoom = room._id
+        ? await Room.findById(room._id).select("text language languageRevision").lean()
+        : room
+
       socket.emit("room-joined", {
-        code: room.text,
+        code: currentRoom?.text ?? room.text,
         users: room.users,
+        ...getRoomLanguage(currentRoom ?? room),
       })
 
       // Notify others about new user
@@ -835,6 +852,43 @@ io.on("connection", (socket) => {
     } catch (error) {
       console.error("❌ Error joining room:", error)
       socket.emit("error", { message: "Failed to join room" })
+    }
+  })
+
+  socket.on("language-change", async (language, reply) => {
+    const acknowledge = typeof reply === "function" ? reply : () => {}
+    const roomId = activeConnections.get(socket.id)?.roomId
+    if (!roomId || !socket.rooms.has(roomId) || !roomLanguages.includes(language)) {
+      acknowledge({ error: "Could not change the room language." })
+      return
+    }
+
+    try {
+      let room
+      if (mongoose.connection.readyState === 1) {
+        room = await Room.findOneAndUpdate(
+          { roomId },
+          { $set: { language }, $inc: { languageRevision: 1 } },
+          { new: true },
+        ).select("language languageRevision").lean()
+      } else {
+        room = inMemoryRooms.get(roomId)
+        if (room) {
+          room.language = language
+          room.languageRevision += 1
+        }
+      }
+
+      if (!room) {
+        acknowledge({ error: "Could not find the room." })
+        return
+      }
+
+      io.to(roomId).emit("language-change", getRoomLanguage(room))
+      acknowledge({ ok: true })
+    } catch (error) {
+      console.error("Error updating room language:", error)
+      acknowledge({ error: "Could not save the room language. Try again." })
     }
   })
 
@@ -935,6 +989,7 @@ app.post("/api/rooms", async (req, res) => {
       const room = {
         roomId,
         text: "",
+        ...getRoomLanguage(),
         users: [],
         createdAt: new Date(),
         lastModified: new Date(),

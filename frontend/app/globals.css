@@ -4,100 +4,290 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    color-scheme: dark;
+    --background: 220 24% 8%;
+    --foreground: 215 31% 94%;
+    --card: 220 20% 12%;
+    --card-foreground: var(--foreground);
+    --popover: 220 20% 14%;
+    --popover-foreground: var(--foreground);
+    --primary: 161 69% 72%;
+    --primary-foreground: 167 57% 10%;
+    --secondary: 218 18% 18%;
+    --secondary-foreground: var(--foreground);
+    --muted: 218 18% 16%;
+    --muted-foreground: 216 17% 71%;
+    --accent: 217 19% 22%;
+    --accent-foreground: var(--foreground);
+    --destructive: 0 44% 26%;
+    --destructive-foreground: 0 90% 92%;
+    --border: 217 17% 22%;
+    --input: 218 11% 42%;
+    --ring: var(--primary);
     --radius: 0.75rem;
+    --editor-surface: #0d1119;
+    --editor-gutter: #111620;
+    --editor-active: #171f2b;
+    --editor-selection: #28473f;
+    --success: #91edc9;
+    --warning: #f4c88e;
+    --danger: #ffb8b7;
+    --font-code: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+  }
+
+  ::selection {
+    background: var(--editor-selection);
+    color: hsl(var(--foreground));
   }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Animation classes */
-.animate-in {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.fade-in-0 {
-  opacity: 0;
-  animation: fadeIn 0.5s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+@layer components {
+  .home-shell {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding: clamp(1.25rem, 5vw, 4rem);
+    background: radial-gradient(ellipse at 15% 25%, #172d2b 0%, transparent 56%), hsl(var(--background));
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .home-layout {
+    width: min(100%, 64rem);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+    align-items: center;
+    gap: clamp(2rem, 7vw, 6rem);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: hsl(var(--foreground));
+    font-weight: 650;
+  }
+
+  .brand-icon {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: none;
+    place-items: center;
+    border: 1px solid #386456;
+    border-radius: 0.625rem;
+    background: #1b342d;
+    color: hsl(var(--primary));
+  }
+
+  .home-title {
+    max-width: 12ch;
+    margin-block: 1.5rem 1rem;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.04;
+    letter-spacing: -0.06em;
+    font-weight: 700;
+    text-wrap: balance;
+  }
+
+  .home-description {
+    max-width: 35ch;
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    line-height: 1.65;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .room-form {
+    box-shadow: 0 22px 56px #0005;
+  }
+
+  .workspace-bar {
+    @apply border-b bg-card;
+  }
+
+  .workspace-width {
+    width: min(100%, 100rem);
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 3vw, 2rem);
+  }
+
+  .workspace-nav {
+    min-height: 4rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    padding-block: 0.625rem;
+  }
+
+  .workspace-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(13rem, 17rem);
+    align-items: start;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    padding-block: clamp(1rem, 3vw, 2rem);
+  }
+
+  .editor-panel {
+    height: max(24rem, calc(100dvh - 9rem));
+    @apply flex min-w-0 flex-col overflow-hidden;
+  }
+
+  .editor-toolbar {
+    @apply relative flex flex-wrap items-center justify-between gap-3 overflow-hidden border-b px-4 py-3;
+    background: linear-gradient(115deg, #1c2a2a 0%, hsl(var(--card)) 65%);
+  }
+
+  .editor-file-icon {
+    @apply grid h-9 w-9 shrink-0 place-items-center rounded-lg border text-primary;
+    border-color: #386456;
+    background: #1b342d;
+  }
+
+  .editor-status {
+    @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t px-4 py-2 font-mono text-xs text-muted-foreground;
+    font-variant-numeric: tabular-nums;
+    background: var(--editor-gutter);
+  }
+
+  .editor-status kbd {
+    @apply rounded border bg-muted px-1.5 py-0.5 text-foreground;
+    font: inherit;
+  }
+
+  .invite-card {
+    background:
+      radial-gradient(ellipse at 100% 0%, #27423b 0%, transparent 65%),
+      hsl(var(--card));
+  }
+
+  .editor-select {
+    @apply rounded-md border border-input bg-background px-2 py-1.5 text-sm text-foreground transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .editor-select:enabled:hover {
+    border-color: hsl(var(--primary));
+  }
+
+  .editor-surface {
+    @apply min-h-0 flex-1;
+    background: var(--editor-surface);
+  }
+
+  .language-glint {
+    display: none;
+  }
+
+  .plain-editor {
+    @apply block h-full w-full resize-none bg-transparent p-4 text-base leading-relaxed text-foreground;
+  }
+
+  .plain-editor::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .plain-editor:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: -2px;
+  }
+
+  .connection-status {
+    @apply inline-flex items-center gap-2 whitespace-nowrap text-sm;
+    color: var(--warning);
+  }
+
+  .connection-status[data-connected="true"] {
+    color: var(--success);
+  }
+
+  .connection-dot {
+    @apply h-2 w-2 flex-none rounded-full;
+    background: currentColor;
+  }
+
+  .workspace-alert {
+    @apply flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-4;
+    color: var(--danger);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .home-layout > section,
+    .room-form,
+    .workspace-editor,
+    .workspace-collaborators {
+      animation: panel-entrance 460ms cubic-bezier(0.2, 0.7, 0.25, 1) both;
+    }
+
+    .room-form,
+    .workspace-collaborators {
+      animation-delay: 85ms;
+    }
+
+    .collaborator-row {
+      animation: panel-entrance 260ms ease-out both;
+    }
+
+    .connection-status[data-connected="true"] .connection-dot {
+      animation: connection-pulse 850ms ease-out;
+    }
+
+    .language-glint {
+      position: absolute;
+      inset: auto 0 0;
+      display: block;
+      height: 2px;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+      animation: language-sweep 650ms cubic-bezier(0.2, 0.65, 0.35, 1) both;
+    }
+
+    .editor-surface > * {
+      animation: editor-reveal 210ms ease-out both;
+    }
+  }
+
+  @media (max-width: 47.99rem) {
+    .home-layout,
+    .workspace-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .home-layout {
+      max-width: 28rem;
+    }
+
+    .editor-panel {
+      height: max(22rem, 60dvh);
+    }
   }
 }
 
-.pulse-slow {
-  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+@keyframes panel-entrance {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes connection-pulse {
+  from { box-shadow: 0 0 0 0 #91edc999; }
+  to { box-shadow: 0 0 0 7px #91edc900; }
+}
+
+@keyframes language-sweep {
+  from { opacity: 0; transform: translateX(-75%); }
+  26% { opacity: 1; }
+  to { opacity: 0; transform: translateX(75%); }
+}
+
+@keyframes editor-reveal {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
 }

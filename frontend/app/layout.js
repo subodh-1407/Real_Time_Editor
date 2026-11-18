@@ -21,8 +21,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "TextSync - Real-time Collaborative Text Editor",
-  description: "A beautiful real-time collaborative text editor built with React and Node.js",
+  title: "TextSync - Real-time Collaborative Code Editor",
+  description: "Edit code together in real time with syntax highlighting and shared rooms.",
 }
 
 export default function RootLayout({ children }) {
